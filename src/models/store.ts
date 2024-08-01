@@ -28,10 +28,6 @@ const storeModel = new Schema(
     location: {
       type: String,
     },
-    default_currency: {
-      type: String,
-      required: true,
-    },
     setup_guide: {
       is_complete: {
         type: Boolean,
@@ -48,7 +44,7 @@ const storeModel = new Schema(
         url: { type: String },
       },
     ],
-    categories: [ { type: String} ],
+    categories: [{ type: String }],
     coupons: [
       {
         code: { type: String, required: true },
@@ -71,12 +67,23 @@ const storeModel = new Schema(
       account_number: { type: String },
     },
     theme: {
-      active_theme: { type: String, default: "minimal", enum: ['minimal', 'trendy', 'classic', 'retro', 'antique'] },
+      active_theme: {
+        type: String,
+        default: "minimal",
+        enum: ["minimal", "trendy", "classic", "retro", "antique"],
+      },
       color: {
         primary: { type: String, default: "DA5726" },
         secondary: { type: String, default: "FFFFFF" },
       },
     },
+    shipping_options: [
+      {
+        name: { type: String, required: true },
+        description: { type: String },
+        price: { type: Number, required: true },
+      },
+    ],
     banners: [
       {
         header: { type: String },

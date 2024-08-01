@@ -1,7 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
-import { UserModel } from "../models/vendors";
+import { UserModel } from "../models/users";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { AuthenticatedRequest } from "middlewares/authentication";
+import { AuthenticatedRequest } from "../middlewares/authentication";
+import { StoreModel } from "../models/store";
 
 export const registerUser = async (
   req: Request,
@@ -61,7 +62,9 @@ export const signInUser = async (
       }
     );
 
-    res.success({ user: foundUser, token }, "Logged In Successfully");
+     const activeStore = await StoreModel.findById(foundUser.active_store)
+
+    res.success({ user: foundUser, token, store: activeStore }, "Logged In Successfully");
   } catch (error) {
     next(error);
   }
@@ -116,7 +119,10 @@ export const retrieveSession = async (
 
     const loggedinUser = await UserModel.findById(decoded._id);
 
-    res.success({ user: loggedinUser });
+     const activeStore = await StoreModel.findById(loggedinUser.active_store);
+
+
+    res.success({ user: loggedinUser, store: activeStore });
   } catch (error) {
     next(error);
   }

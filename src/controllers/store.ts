@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "middlewares/authentication";
 import { StoreModel } from "../models/store";
-import { UserModel } from "../models/vendors";
+import { UserModel } from "../models/users";
 
 export const createNewStore = async (
   req: AuthenticatedRequest,
