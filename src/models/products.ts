@@ -86,9 +86,8 @@ const orderSchema = new Schema(
 );
 
 const cartSchema = new Schema(
-  {
-    cart_id: { type: String, required: true },
-    cartItems: [
+  { 
+    line_tems: [
       {
         product: {
           type: Schema.Types.ObjectId,
