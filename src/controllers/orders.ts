@@ -37,6 +37,22 @@ export const getStoreOrders = async (
   }
 };
 
+export const getStoreOrderbyId = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params 
+
+  try {
+    const order = await OrderModel.findById(id);
+
+    res.success(order, "Store Order");
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getCustomerOrders = async (
   req: AuthenticatedRequest,
   res: Response,

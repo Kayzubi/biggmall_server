@@ -27,6 +27,7 @@ const storeModel = new Schema(
     },
     location: {
       type: String,
+      default: "Nigeria",
     },
     setup_guide: {
       is_complete: {
@@ -61,6 +62,7 @@ const storeModel = new Schema(
         end_Date: { type: Date },
       },
     ],
+    allow_pay_on_delivery: { type: Boolean, default: false },
     remitance_account: {
       bank_name: { type: String },
       account_name: { type: String },

@@ -1,15 +1,17 @@
 import { authMiddleware } from "../middlewares/authentication";
-import { createNewOrder, getStoreOrders, getCustomerOrders, updateOrder, deleteOrder } from "../controllers/orders";
+import { createNewOrder, getStoreOrders, getCustomerOrders, updateOrder, deleteOrder, getStoreOrderbyId } from "../controllers/orders";
 import { Router } from "express";
 
 
 
 export default (router: Router) => {
-    router.post('/order', createNewOrder)
-    router.get('/order', authMiddleware, getStoreOrders)
-    router.patch('/order/:id', authMiddleware, updateOrder)
-    router.delete('/order/:id', authMiddleware, deleteOrder)
+    router.post('/orders', createNewOrder)
+    router.get('/orders', authMiddleware, getStoreOrders)
+    router.patch('/orders/:id', authMiddleware, updateOrder)
+    router.delete('/orders/:id', authMiddleware, deleteOrder)
+    router.get("/order/:id", authMiddleware, getStoreOrderbyId);
 
 
-    router.get('/order/:id', authMiddleware, getCustomerOrders)
+
+    router.get('/orders/:id', authMiddleware, getCustomerOrders)
 }
