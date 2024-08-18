@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { UserModel } from "../models/users";
-import { ProductModel } from "../models/products";
+import { NextFunction, Request, Response } from 'express'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import { UserModel } from '../models/users'
+import { ProductModel } from '../models/products'
+import { CustomError } from './errorHandler'
 
 export interface AuthenticatedRequest extends Request {
-  user_id?: string | object;
+  user_id?: string | object
 }
 
 export const isOwnerActiveStore = async (
@@ -12,68 +13,59 @@ export const isOwnerActiveStore = async (
   res: Response,
   next: NextFunction
 ) => {
-  const user_id = req.user_id;
-  const { store } = req.body;
+  const user_id = req.user_id
+  const { store } = req.body
 
   try {
-    const user = await UserModel.findById(user_id);
+    const user = await UserModel.findById(user_id)
 
-    if (user.active_store != store)
-      return res.status(401).send({ message: "Not Authorized" });
+    if (user.active_store != store) throw new CustomError('Not Authorized', 401)
 
-    next();
+    next()
   } catch (error) {
-    res.status(401).send({ message: "Not Authorized" });
+    next(error)
   }
-};
-
+}
 
 export const isOwnerActiveStoreProduct = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const user_id = req.user_id;
+  const user_id = req.user_id
   const { id } = req.params
 
   try {
-    const user = await UserModel.findById(user_id);
+    const user = await UserModel.findById(user_id)
 
     const product = await ProductModel.findById(id)
 
-
     if (user.active_store.toString() != product.store.toString())
-      return res
-        .status(401)
-        .send({
-          message: "Not Authorized"
-        });
+      throw new CustomError('Not Authorized', 401)
 
-    next();
+    next()
   } catch (error) {
-    res.status(401).send({ message: "Not Authorized" });
+    next(error)
   }
-};
+}
 
 export const authMiddleware = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.header("Authorization");
+  const token = req.header('Authorization')
 
-  if (!token) {
-    return res.status(401).send({ emessage: "Authentication token missing" });
-  }
+  if (!token) throw new CustomError('Authentication token missing', 401)
 
   try {
     const decoded = jwt.verify(
-      token.replace("Bearer ", ""),
+      token.replace('Bearer ', ''),
       process.env.JWT_SECRET
-    ) as JwtPayload;
-    req.user_id = decoded._id;
-    next();
+    ) as JwtPayload
+    req.user_id = decoded._id
+    next()
   } catch (err) {
-    res.status(401).send({ error: "Invalid token" });
+    next(err)
   }
-};
+}

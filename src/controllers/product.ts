@@ -3,6 +3,16 @@ import { AuthenticatedRequest } from "../middlewares/authentication";
 import { ProductModel } from "../models/products";
 import { UserModel } from "../models/users";
 
+
+
+export interface Query {
+  page?: string;
+  limit?: string;
+  [key: string]: any; 
+}
+
+
+
 export const addNewProduct = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -56,19 +66,25 @@ export const deleteProduct = async (
 };
 
 export const getStoreProducts = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const user_id = req.user_id;
+  const { page, per_page } = req.query as Query;
+  const pageNumber = parseInt(page, 10) || 1;
+  const limit = parseInt(per_page, 10) || 10;
+  const { storeId } = req.params;
 
   try {
-    const user = await UserModel.findById(user_id);
-
     const products = await ProductModel.find({
-      store: user.active_store,
-    }).select("-store");
-
+      ...req.query,
+      store: storeId,
+    })
+      .select("-store")
+      .limit(limit * 1)
+      .skip((pageNumber - 1) * limit)
+      .sort({ createdAt: -1 });
+      
     res.success(products, "List of store products");
   } catch (error) {
     next(error);
@@ -89,3 +105,6 @@ export const getStoreProductsById = async (
     next(error);
   }
 };
+
+
+            
