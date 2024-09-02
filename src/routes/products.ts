@@ -1,9 +1,12 @@
 import {
   addNewProduct,
   getStoreProducts,
-  getStoreProductsById,
+  getProductsByStoreId,
   updateProduct,
   deleteProduct,
+  getProductById,
+  addProductVariant,
+  deleteProductVariant,
 } from '../controllers/product'
 import { Router } from 'express'
 import {
@@ -13,18 +16,26 @@ import {
 } from '../middlewares/authentication'
 
 export default (router: Router) => {
-  router.post(
-    '/products/:storeId',
-    authMiddleware,
-    isOwnerActiveStore,
-    addNewProduct
-  )
+  router.post('/products', authMiddleware, isOwnerActiveStore, addNewProduct)
   router.patch(
-    '/products/:id',
+    '/product/:id',
     authMiddleware,
     isOwnerActiveStoreProduct,
     updateProduct
   )
+  router.patch(
+    '/product/:id/variant',
+    authMiddleware,
+    isOwnerActiveStoreProduct,
+    addProductVariant
+  )
+  router.delete(
+    '/product/:id/variant/:variant_id',
+    authMiddleware,
+    isOwnerActiveStoreProduct,
+    deleteProductVariant
+  )
+
   router.delete(
     '/products/:id',
     authMiddleware,
@@ -32,6 +43,7 @@ export default (router: Router) => {
     deleteProduct
   )
 
-  router.get('/products/:storeId', getStoreProducts)
-  router.get('/products/:id', getStoreProductsById)
+  router.get('/products', authMiddleware, getStoreProducts)
+  router.get('/products/:storeId', getProductsByStoreId)
+  router.get('/product/:id', getProductById)
 }

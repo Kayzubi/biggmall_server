@@ -6,6 +6,7 @@ import { CustomError } from './errorHandler'
 
 export interface AuthenticatedRequest extends Request {
   user_id?: string | object
+  user_store?: string
 }
 
 export const isOwnerActiveStore = async (
@@ -14,13 +15,15 @@ export const isOwnerActiveStore = async (
   next: NextFunction
 ) => {
   const user_id = req.user_id
+
   const { store } = req.body
 
   try {
     const user = await UserModel.findById(user_id)
 
-    if (user.active_store != store) throw new CustomError('Not Authorized', 401)
+    if (!user) throw new CustomError('Not Authorized', 401)
 
+    req.user_store = user.active_store
     next()
   } catch (error) {
     next(error)
